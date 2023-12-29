@@ -293,7 +293,6 @@ function Navbar({ children }) {
               </li>
               <li>
                 <Link
-                  target="_blank"
                   to="/contact"
                   class=" text-sm text-gray-500 dark:text-gray-400"
                 >
