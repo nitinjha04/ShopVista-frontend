@@ -69,7 +69,7 @@ export function signOut() {
 export function resetPasswordRequest(email) {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await fetch("/auth/reset-password-request", {
+      const response = await fetch("/auth/reset-password-req", {
         method: "POST",
         body: JSON.stringify({email}),
         headers: { "content-type": "application/json" },
