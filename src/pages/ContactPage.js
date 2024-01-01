@@ -68,11 +68,11 @@ function ContactPage() {
                   </li>
                   {/* <li className="flex border-b py-2">
                     <span className="font-bold w-24">Birthday:</span>
-                    <span className="text-gray-700">06-July-2005</span>
+                    <span className="text-gray-700"></span>
                   </li> */}
                   {/* <li className="flex border-b py-2">
                     <span className="font-bold w-24">Mobile:</span>
-                    <span className="text-gray-700">+91 82877 62253</span>
+                    <span className="text-gray-700">+91</span>
                   </li> */}
                   <li className="flex border-b py-2">
                     <span className="font-bold w-24">Email:</span>

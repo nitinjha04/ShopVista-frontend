@@ -11,7 +11,6 @@ import {
   fetchBrandsAsync,
   fetchProductByTitleAsync,
   selectProductListStatus,
-  selectSearchedProducts,
 } from "../productSlice";
 import { Fragment } from "react";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
@@ -23,10 +22,9 @@ import {
   PlusIcon,
 } from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
-import { ITEMS_PER_PAGE, discountedPrice } from "../../../app/constants";
+import { ITEMS_PER_PAGE } from "../../../app/constants";
 import Pagination from "../../common/Pagination";
 import { addToCartAsync, selectItems } from "../../cart/cartSlice";
-import { selectLoggedInUser } from "../../auth/authSlice";
 import { toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -34,15 +32,18 @@ import background from "../../../images/Product1.jpg";
 
 const sortOptions = [
   { name: "Best Rating", sort: "#rating", order: "desc", current: false },
-  { name: "Price: Low to High", sort: 'discountedPrice', order: "asc", current: false },
-  { name: "Price: High to Low", sort: 'discountedPrice', order: "desc", current: false },
-];
-const subCategories = [
-  { name: "Totes", href: "#" },
-  { name: "Backpacks", href: "#" },
-  { name: "Travel Bags", href: "#" },
-  { name: "Hip Bags", href: "#" },
-  { name: "Laptop Sleeves", href: "#" },
+  {
+    name: "Price: Low to High",
+    sort: "discountedPrice",
+    order: "asc",
+    current: false,
+  },
+  {
+    name: "Price: High to Low",
+    sort: "discountedPrice",
+    order: "desc",
+    current: false,
+  },
 ];
 
 function classNames(...classes) {
@@ -76,27 +77,27 @@ export default function ProductList() {
   const [sort, setSort] = useState({});
   const [page, setPage] = useState(1);
 
+  // handleFilter function
   const handleFilter = (e, section, option) => {
     const newFilter = { ...filter };
+    newFilter[section.id] = newFilter[section.id] || []; // Ensure the property exists as an array
+
     if (e.target.checked) {
-      if (newFilter[section.id]) {
+      if (!newFilter[section.id].includes(option.value)) {
         newFilter[section.id].push(option.value);
-      } else {
-        newFilter[section.id] = [option.value];
       }
     } else {
-      const index = newFilter[section.id].findIndex(
-        (el) => el === option.value
-      );
-      newFilter[section.id].splice(index, 1);
+      const index = newFilter[section.id].indexOf(option.value);
+      if (index !== -1) {
+        newFilter[section.id].splice(index, 1);
+      }
     }
 
-    setFilter(newFilter);
+    setFilter({ ...newFilter }); // Update the filter state
   };
 
   const handleSort = (e, option) => {
     const sort = { _sort: option.sort, _order: option.order };
-    // console.log({ sort });
     setSort(sort);
   };
 
@@ -123,10 +124,9 @@ export default function ProductList() {
         draggable: false,
         progress: undefined,
         theme: "colored",
-        // ye mera notification hai
       });
     } else {
-      toast.warn("Product Already Added", {
+      toast.info("Product Already Added", {
         position: "top-left",
         autoClose: 3000,
         hideProgressBar: false,
@@ -189,38 +189,7 @@ export default function ProductList() {
             </div>
           </div>
         </div>
-
-        {/* <div className="bg-white relative   flex items-center justify-center overflow-hidden z-50 ">
-          <div className="relative mx-auto h-full px-4 sm:max-w-xl md:max-w-full md:px-24 lg:max-w-screen-xl lg:px-8">
-            <div className="flex flex-col items-center justify-between lg:flex-row py-10">
-              <div className=" relative ">
-                <div className=" absolute top-0 -left-48 z-0  opacity-50 ">
-                  <img
-                    src={background}
-                    className="w-40 z-0  h-full    object-fill fill-y text-y   "
-                  />
-                </div>
-                <div className="lg:max-w-xl lg:pr-5 relative z-40">
-                  <h2 className=" max-w-lg text-5xl font-light leading-snug tracking-tight text-g1 sm:text-7xl sm:leading-snug">
-                    We make you look
-                    <span className="my-1 inline-block border-b-8 border-g4 bg-white px-4 font-bold text-g4 animate__animated animate__flash">
-                      different
-                    </span>
-                  </h2>
-                  <p className="text-base text-gray-700">
-                    Sed ut perspiciatis unde omnis iste natus error sit
-                    voluptatem accusantium doloremque it.
-                  </p>
-                </div>
-              </div>
-            <div className="relative hidden lg:ml-32 lg:block lg:w-1/2">
-                <div className="abg-orange-400 mx-auto w-fit overflow-hidden rounded-[6rem] rounded-br-none rounded-tl-none">
-                  <img src={background} />
-                </div>
-              </div>
-            </div>
-          </div> 
-        </div> */}
+ 
       </>
       <div className="App ">
         <div className="bg-personalColour">
@@ -235,11 +204,11 @@ export default function ProductList() {
 
             <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-4">
               <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-8">
-                <h1 className="text-4xl font-bold tracking-tight text-black opacity-50">
-                  All Products
+                <h1 className="text-lg md:text-2xl font-bold tracking-tight text-black opacity-50">
+                  Products
                 </h1>
 
-                <div className="flex items-center">
+                <div className="flex items-center w-full justify-end ">
                   {/* //! search box */}
                   <div class="relative  sm:block mx-3  ">
                     <label class="sr-only" for="search">
@@ -251,7 +220,7 @@ export default function ProductList() {
                       class="focus:outline-none h-10 w-full rounded-lg border-none bg-gray-700 pe-10 ps-4 text-sm shadow-sm sm:w-56"
                       id="search"
                       type="search"
-                      placeholder="Search website..."
+                      placeholder="Search Product..."
                       autoComplete="off"
                       onChange={(e) => {
                         setSearchTitle(e.target.value);
@@ -349,6 +318,7 @@ export default function ProductList() {
                   <DesktopFilter
                     handleFilter={handleFilter}
                     filters={filters}
+                    filter={filter}
                   />
 
                   {/* Product grid */}
@@ -459,7 +429,7 @@ function MobileFilter({
                           </h3>
                           <Disclosure.Panel className="pt-6">
                             <div className="space-y-6">
-                              {section.options.map ((option, optionIdx) => (
+                              {section.options.map((option, optionIdx) => (
                                 <div
                                   key={option.value}
                                   className="flex items-center"
@@ -498,7 +468,7 @@ function MobileFilter({
     </div>
   );
 }
-function DesktopFilter({ handleFilter, filters }) {
+function DesktopFilter({ handleFilter, filters, filter }) {
   return (
     <div>
       <form className="hidden lg:block">
@@ -526,26 +496,29 @@ function DesktopFilter({ handleFilter, filters }) {
                 </h3>
                 <Disclosure.Panel className="pt-6">
                   <div className="space-y-4 h-96 overflow-auto ">
-                    {section.options.map 
-                      ((option, optionIdx) => (
-                        <div key={option.value} className="flex  items-center">
-                          <input
-                            id={`filter-${section.id}-${optionIdx}`}
-                            name={`${section.id}[]`}
-                            defaultValue={option.value}
-                            type="checkbox"
-                            defaultChecked={option.checked}
-                            onChange={(e) => handleFilter(e, section, option)}
-                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                          />
-                          <label
-                            htmlFor={`filter-${section.id}-${optionIdx}`}
-                            className="ml-3 text-sm text-black"
-                          >
-                            {option.label}
-                          </label>
-                        </div>
-                      ))}
+                    {section.options.map((option, optionIdx) => (
+                      <div key={option.value} className="flex  items-center">
+                        <input
+                          id={`filter-${section.id}-${optionIdx}`}
+                          name={`${section.id}[]`}
+                          defaultValue={option.value}
+                          type="checkbox"
+                          checked={
+                            filter && filter[section.id]?.includes(option.value)
+                          }
+                          onChange={(e) => {
+                            handleFilter(e, section, option);
+                          }}
+                          className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <label
+                          htmlFor={`filter-${section.id}-${optionIdx}`}
+                          className="ml-3 text-sm text-black"
+                        >
+                          {option.label}
+                        </label>
+                      </div>
+                    ))}
                   </div>
                 </Disclosure.Panel>
               </>

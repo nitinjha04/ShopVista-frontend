@@ -102,11 +102,14 @@ export default function ProductForm() {
     dispatch(updateProductAsync(product));
   };
 
+  const handelCancel = () => {
+    SetOpenModal(false);
+  };
+
   return (
     <>
       <form
         onSubmit={handleSubmit((data) => {
-          console.log(data);
           const product = { ...data };
           product.images = [
             product.image1,
@@ -133,20 +136,9 @@ export default function ProductForm() {
           if (params.id) {
             product.id = params.id;
             product.rating = +selectedProduct.rating || 0;
-            dispatch(updateProductAsync(product));
-            toast.success("Product Updated", {
-              position: "top-left",
-              autoClose: 3000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: false,
-              progress: undefined,
-              theme: "dark",
-            });
           } else {
             dispatch(createProductAsync(product));
-            toast.success("Product Created", {
+            toast.success("Done", {
               position: "top-left",
               autoClose: 3000,
               hideProgressBar: false,
@@ -653,18 +645,15 @@ export default function ProductForm() {
             <div>
               {selectedProduct && (
                 <div>
-                  <Link to="/admin">
-                    <button
-                      onClick={(e) => {
-                        SetOpenModal(selectedProduct.id);
-                      }}
-                      type="submit"
-                      className=" left-0  rounded-md bg-red-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                    >
-                      Delete
-                    </button>
-                  </Link>
-
+                  <button
+                    onClick={(e) => {
+                      SetOpenModal(selectedProduct.id);
+                    }}
+                    type="submit"
+                    className=" left-0  rounded-md bg-red-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                  >
+                    Delete
+                  </button>
                   <Modal
                     title={`Delete ${selectedProduct.title}`}
                     message="Are you Sure About that ?"
@@ -673,6 +662,7 @@ export default function ProductForm() {
                     // OpenAction={(e) => handleRemove(e, selectedProduct.id)}
                     OpenAction={handleDelete}
                     showModal={openModal === selectedProduct.id}
+                    onCancel={handelCancel}
                   ></Modal>
                 </div>
               )}

@@ -20,8 +20,9 @@ export default function Cart() {
   const items = useSelector(selectItems);
   const cartLoaded = useSelector(selectCartLoaded);
 
-  const [openModal, SetOpenModal] = useState(false);
-  console.log('openModal', openModal)
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null); // New state to track selected item ID
+
 
   const [quantity, setQuantity] = useState(1);
 
@@ -36,7 +37,6 @@ export default function Cart() {
   const dispatch = useDispatch();
 
   const handleQuantity = (e, item) => {
-    console.log(item.id);
     dispatch(updateCartAsync({ id: item.id, quantity: +e.target.value }));
 
     // setQuantity(e.target.value);
@@ -44,6 +44,13 @@ export default function Cart() {
   const handleRemove = (e, id) => {
     dispatch(deleteItemFromCartAsync(id));
   };
+// kal 
+  const handleCancel = (e) => {
+    setOpenModal(false); // Function to close the modal
+    setSelectedItemId(null); // Reset the selected item ID
+  };
+
+  
 
   return (
     <>
@@ -56,7 +63,7 @@ export default function Cart() {
               '\n    @layer utilities {\n    input[type="number"]::-webkit-inner-spin-button,\n    input[type="number"]::-webkit-outer-spin-button {\n      -webkit-appearance: none;\n      margin: 0;\n    }\n  }\n',
           }}
         />
-        <div className="h-screen bg-gray-100 pt-20">
+        <div className=" bg-gray-100 pt-20">
           <h1 className="mb-10 text-center text-2xl font-bold">Cart Items</h1>
           <div className="mx-auto max-w-5xl justify-center px-6 md:flex md:space-x-6 xl:px-0">
             <div className="rounded-lg h-96 overflow-y-auto   md:w-2/3">
@@ -80,7 +87,6 @@ export default function Cart() {
                             onClick={() => {
                               if (item.quantity === 1) {
                                 return;
-                                SetOpenModal(item.id);
                               } else {
                                 handleQuantity(
                                   { target: { value: item.quantity - 1 } },
@@ -120,7 +126,9 @@ export default function Cart() {
                           </p>
                           <XCircleIcon
                             onClick={(e) => {
-                              SetOpenModal(item.id);
+                              // SetOpenModal(item.id);
+                              setOpenModal(true); // Open the modal
+                              setSelectedItemId(item.id); // Set the selected item ID
                             }}
                             className=" w-6 h-6 cursor-pointer"
                           />
@@ -133,7 +141,8 @@ export default function Cart() {
                             action="Delete"
                             cancel="Cancel"
                             OpenAction={(e) => handleRemove(e, item.id)}
-                            showModal={openModal === item.id}
+                            showModal={openModal && selectedItemId === item.id} // Show modal based on conditions
+                            onCancel={handleCancel}
                           ></Modal>
                         </div>
                       </div>
@@ -169,108 +178,6 @@ export default function Cart() {
           </div>
         </div>
       </>
-
-      {/* <div className="mx-auto bg-white mt-12 max-w-7xl px-4 sm:px-6 lg:px-8">
-        <h2 className=" py-6 text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
-          Shopping Cart
-        </h2>
-        <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-          <div className="flow-root">
-            <ul role="list" className="-my-6 divide-y divide-gray-200">
-              {items.map((item) => (
-                <li key={item.id} className="flex py-6">
-                  <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
-                    <img
-                      src={item.thumbnail}
-                      alt={item.title}
-                      className="h-full w-full object-cover object-center"
-                    />
-                  </div>
-
-                  <div className="ml-4 flex flex-1 flex-col">
-                    <div>
-                      <div className="flex justify-between text-base font-medium text-gray-900">
-                        <h3>
-                          <a href={item.href}>{item.title}</a>
-                        </h3>
-                        <p className="ml-4">
-                          ${" "}
-                          {Math.round(
-                            item.price * (1 - item.discountPercentage / 100)
-                          )}
-                        </p>
-                      </div>
-                      <p className="mt-1 text-sm text-gray-500">{item.brand}</p>
-                    </div>
-                    <div className="flex flex-1 items-end justify-between text-sm">
-                      <div className="text-gray-500">
-                        Qty
-                        <select
-                          onChange={(e) => handleQuantity(e, item)}
-                          value={item.quantity}
-                        >
-                          <option value="1">1</option>
-                          <option value="2">2</option>
-                          <option value="3">3</option>
-                          <option value="4">4</option>
-                          <option value="5">5</option>
-                        </select>
-                      </div>
-
-                      <div className="flex">
-                        <button
-                          onClick={(e) => handleRemove(e, item.id)}
-                          type="button"
-                          className="font-medium text-indigo-600 hover:text-indigo-500"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-gray-200 px-4 py-6 sm:px-6">
-          <div className="flex  justify-between my-2 text-base font-medium text-gray-900">
-            <p>Total Items In Your Cart</p>
-            <p>{totalItem} Items</p>
-          </div>
-          <div className="flex justify-between my-2 text-base font-medium text-gray-900">
-            <p>Subtotal</p>
-            <p>$ {totalAmount}</p>
-          </div>
-          <p className="mt-0.5 text-sm text-gray-500">
-            Shipping and taxes calculated at checkout.
-          </p>
-          <div className="mt-6">
-            <Link
-              to="/checkout"
-              href="#"
-              className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
-            >
-              Checkout
-            </Link>
-          </div>
-          <div className=" mt-6 flex justify-center text-center text-sm text-gray-500">
-            <p>
-              or
-              <Link to="/">
-                <button
-                  type="button"
-                  className=" font-medium text-indigo-600 hover:text-indigo-500"
-                >
-                  Continue Shopping
-                  <span aria-hidden="true"> &rarr;</span>
-                </button>
-              </Link>
-            </p>
-          </div>
-        </div>
-      </div> */}
     </>
   );
 }

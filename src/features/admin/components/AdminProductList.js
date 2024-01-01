@@ -13,10 +13,7 @@ import {
 } from "../../product-list/productSlice";
 import { Fragment } from "react";
 import { Dialog, Disclosure, Menu, Transition } from "@headlessui/react";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/20/solid";
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   ChevronDownIcon,
@@ -30,7 +27,6 @@ import { selectLoggedInUserToken } from "../../auth/authSlice";
 import { addToCartAsync, selectItems } from "../../cart/cartSlice";
 import StarRatings from "react-star-ratings";
 import { toast } from "react-toastify";
-
 
 const sortOptions = [
   { name: "Best Rating", sort: "#rating", order: "desc", current: false },
@@ -72,20 +68,20 @@ export default function AdminProductList() {
 
   const handleFilter = (e, section, option) => {
     const newFilter = { ...filter };
+    newFilter[section.id] = newFilter[section.id] || []; // Ensure the property exists as an array
+
     if (e.target.checked) {
-      if (newFilter[section.id]) {
+      if (!newFilter[section.id].includes(option.value)) {
         newFilter[section.id].push(option.value);
-      } else {
-        newFilter[section.id] = [option.value];
       }
     } else {
-      const index = newFilter[section.id].findIndex(
-        (el) => el === option.value
-      );
-      newFilter[section.id].splice(index, 1);
+      const index = newFilter[section.id].indexOf(option.value);
+      if (index !== -1) {
+        newFilter[section.id].splice(index, 1);
+      }
     }
 
-    setFilter(newFilter);
+    setFilter({ ...newFilter }); // Update the filter state
   };
 
   const handleSort = (e, option) => {
@@ -176,51 +172,51 @@ export default function AdminProductList() {
 
           <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-8">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-                All Products
+              <h1 className="text-lg md:text-2xl font-bold tracking-tight text-black opacity-50">
+                Products
               </h1>
 
               <div className="flex items-center">
                 {/* //! search box */}
                 <div class="relative  sm:block mx-3  ">
-                  <label class="sr-only" for="search">
-                    {" "}
-                    Search{" "}
-                  </label>
+                    <label class="sr-only" for="search">
+                      {" "}
+                      Search{" "}
+                    </label>
 
-                  <input
-                    class="focus:outline-none h-10 w-full rounded-lg border-none bg-gray-700 pe-10 ps-4 text-sm shadow-sm sm:w-56"
-                    id="search"
-                    type="search"
-                    placeholder="Search website..."
-                    autoComplete="off"
-                    onChange={(e) => {
-                      setSearchTitle(e.target.value);
-                      handleSearchByTitle(e);
-                    }}
-                  />
+                    <input
+                      class="focus:outline-none h-10 w-full rounded-lg border-none bg-gray-700 pe-10 ps-4 text-sm shadow-sm sm:w-56"
+                      id="search"
+                      type="search"
+                      placeholder="Search Product..."
+                      autoComplete="off"
+                      onChange={(e) => {
+                        setSearchTitle(e.target.value);
+                        handleSearchByTitle(e);
+                      }}
+                    />
 
-                  <button
-                    type="button"
-                    class="absolute end-1 top-1/2 -translate-y-1/2 rounded-md bg-gray-50 p-2 text-gray-600 transition hover:text-gray-700"
-                  >
-                    <span class="sr-only">Search</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      stroke-width="2"
+                    <button
+                      type="button"
+                      class="absolute end-1 top-1/2 -translate-y-1/2 rounded-md bg-gray-50 p-2 text-gray-600 transition hover:text-gray-700"
                     >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                      <span class="sr-only">Search</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                        />
+                      </svg>
+                    </button>
+                  </div>
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button className="group inline-flex justify-center text-sm font-medium text-gray-700 hover:text-gray-900">
@@ -282,13 +278,17 @@ export default function AdminProductList() {
                 Products
               </h2>
 
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
                 {/* Filters */}
-                <DesktopFilter handleFilter={handleFilter} filters={filters} />
+                <DesktopFilter
+                  handleFilter={handleFilter}
+                  filters={filters}
+                  filter={filter}
+                />
 
                 {/* Product grid */}
 
-                <div className="lg:col-span-3">
+                <div className="lg:col-span-4">
                   <div className=" px-8">
                     <Link
                       to="/admin/product-form"
@@ -398,7 +398,7 @@ function MobileFilter({
                           </h3>
                           <Disclosure.Panel className="pt-6">
                             <div className="space-y-6">
-                              {section.options.map ((option, optionIdx) => (
+                              {section.options.map((option, optionIdx) => (
                                 <div
                                   key={option.value}
                                   className="flex items-center"
@@ -437,7 +437,7 @@ function MobileFilter({
     </div>
   );
 }
-function DesktopFilter({ handleFilter, filters }) {
+function DesktopFilter({ handleFilter, filters, filter }) {
   return (
     <div>
       <form className="hidden lg:block">
@@ -449,9 +449,9 @@ function DesktopFilter({ handleFilter, filters }) {
           >
             {({ open }) => (
               <>
-                <h3 className="-my-3 flow-root">
-                  <Disclosure.Button className="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500">
-                    <span className="font-medium text-gray-900">
+                <h3 className="-my-3 text-black  flow-root">
+                  <Disclosure.Button className="flex w-full items-center justify-between bg-personalColour py-3 text-sm text-black hover:text-gray-500">
+                    <span className="font-medium  text-black opacity-50">
                       {section.name}
                     </span>
                     <span className="ml-6 flex items-center">
@@ -464,21 +464,27 @@ function DesktopFilter({ handleFilter, filters }) {
                   </Disclosure.Button>
                 </h3>
                 <Disclosure.Panel className="pt-6">
-                  <div className="space-y-4">
-                    {section.options.map ((option, optionIdx) => (
-                      <div key={option.value} className="flex items-center">
+                  <div className="space-y-4 h-96 overflow-auto ">
+                    {section.options.map((option, optionIdx) => (
+                      <div key={option.value} className="flex  items-center">
                         <input
                           id={`filter-${section.id}-${optionIdx}`}
                           name={`${section.id}[]`}
                           defaultValue={option.value}
                           type="checkbox"
-                          defaultChecked={option.checked}
-                          onChange={(e) => handleFilter(e, section, option)}
+                          checked={
+                            filter && filter[section.id]?.includes(option.value)
+                          }
+                          onChange={(e) => {
+                            // console.log(filter)
+                            // console.log(option.value, option.checked)
+                            handleFilter(e, section, option);
+                          }}
                           className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                         />
                         <label
                           htmlFor={`filter-${section.id}-${optionIdx}`}
-                          className="ml-3 text-sm text-gray-600"
+                          className="ml-3 text-sm text-black"
                         >
                           {option.label}
                         </label>
@@ -649,10 +655,10 @@ function ProductGrid({ products, selectedProduct, handleDelete, handleCart }) {
                     to={`/product-detail/${product.id}`}
                     className=" max-w-2xl mx-auto"
                   >
-                    <div className=" aspect-h-1 aspect-w-1 min-h-60 w-full overflow-auto shadow-lg hover:shadow-xl hover:transform hover:scale-105 duration-300  lg:h-full lg:w-full   bg-cardColour  rounded-lg max-w-sm  dark:border-gray-700">
+                    <div className=" flex flex-col  aspect-h-1 aspect-w-1 min-h-60 w-full overflow-auto shadow-lg hover:shadow-xl hover:transform hover:scale-105 duration-300  lg:h-full lg:w-full   bg-cardColour  rounded-lg max-w-sm  dark:border-gray-700">
                       <div className="  ">
                         <img
-                          className="rounded-t-lg p-8 "
+                          className="rounded-t-lg p-4  "
                           src={product.thumbnail}
                           alt={product.title}
                         />
@@ -702,13 +708,13 @@ function ProductGrid({ products, selectedProduct, handleDelete, handleCart }) {
                           </p>
                         </div>
                       )}
-                        <div className=" z-40 relative flex justify-center m-2">
-                          <Link to={`/admin/product-form/edit/${product.id}`}>
-                            <button className=" mt-1 inline-flex w-full justify-center rounded-md bg-red-600 px-2 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500  sm:w-auto">
-                              Edit / Delete
-                            </button>
-                          </Link>
-                        </div>
+                      <div className=" z-40 relative flex justify-center m-2">
+                        <Link to={`/admin/product-form/edit/${product.id}`}>
+                          <button className=" mt-1 inline-flex w-full justify-center rounded-md bg-red-600 px-2 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500  sm:w-auto">
+                            Edit / Delete
+                          </button>
+                        </Link>
+                      </div>
                     </div>
                   </Link>
                 </>

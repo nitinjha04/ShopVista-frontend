@@ -42,7 +42,7 @@ export default function Login() {
             <img src={logo} className=" mb-3 text-center h-auto w-2/3" />
           </span>
           <div className="bg-white shadow w-full rounded-lg divide-y divide-gray-200">
-            <form
+            <form 
               noValidate
               onSubmit={handleSubmit((data) => {
                 dispatch(

@@ -74,7 +74,7 @@ function AdminOrders() {
   return (
     <>
       <div className="overflow-x-auto w-full">
-        <div className="flex  items-center justify-center bg-gray-100 font-sans overflow-hidden">
+        <div className="flex  px-4 bg-gray-100 font-sans overflow-auto">
           <div className="">
             <div className="bg-white  shadow-md rounded my-6">
               <table className=" w-full table-auto">
@@ -171,7 +171,7 @@ function AdminOrders() {
                       <td className="py-2 px-2 text-center ">
                         {order.items.map((item) => (
                           <div className="flex items-center ">
-                            <div className="mr-2">
+                            <div className="mr-2 hidden xl:flex">
                               <img
                                 className="w-6 h-6 rounded-full"
                                 src={item.product.thumbnail}

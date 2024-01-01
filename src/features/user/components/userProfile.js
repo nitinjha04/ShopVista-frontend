@@ -445,7 +445,7 @@ export default function UserProfile() {
                     </div>
                   </form>
                 ) : null}
-                <div key={index} className="border-2 rounded-lg shadow-xl p-3 hover:transform hover:scale-95 duration-300 flex py-3  min-w-0 gap-x-4">
+                <div key={index} className="border-2 flex rounded-lg shadow-xl p-3 hover:transform hover:scale-95 duration-300 py-3  min-w-0 gap-x-4">
                   <div className="min-w-0  flex-auto">
                       <p className="text-sm font-semibold leading-6 text-gray-900">
                         {address.name}
@@ -454,7 +454,7 @@ export default function UserProfile() {
                         {address.email}
                       </p>
                   </div>
-                  <div className="hidden shrink-0 sm:flex sm:flex-col sm:items-end">
+                  <div className=" text-sm flex-col lg:text-lg shrink-0 sm:flex sm:flex-col sm:items-end">
                     <p className="text-sm leading-6 text-gray-900">
                       {address.street},{address.city},{address.state},
                       {address.pinCode}
