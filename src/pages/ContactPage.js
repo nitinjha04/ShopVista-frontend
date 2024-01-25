@@ -103,7 +103,7 @@ function ContactPage() {
                         />
                       </svg>
                     </a>
-                    <a to="#" title="LinkedIn">
+                    <a to="www.linkedin.com/in/jhanitin" target='_blank' title="LinkedIn">
                       <svg
                         className="w-5 h-5"
                         xmlns="http://www.w3.org/2000/svg"
