@@ -637,7 +637,7 @@ function ProductGrid({ products, handleCart, addNotification }) {
                         </div>
                         <div className="flex z-50 relative items-center flex-row justify-between">
                           <span className="text-base font-bold text-gray-900">
-                            ${product.discountedPrice}
+                          ${product.price - (product.price * (product.discountPercent / 100))}
                           </span>
                           <button
                             onClick={(e) => handleCart(e, product)}
